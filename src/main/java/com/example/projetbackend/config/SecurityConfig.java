@@ -19,12 +19,19 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login", "/api/register").permitAll()
+                        .requestMatchers(
+                                "/api/login",
+                                "/api/register",
+                                "/v3/api-docs/**",        // autoriser la documentation OpenAPI
+                                "/swagger-ui/**",         // autoriser Swagger UI
+                                "/swagger-ui.html"        // autoriser la page principale Swagger
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
     @Bean
     public JwtAuthFilter jwtAuthFilter() {
         return new JwtAuthFilter();
