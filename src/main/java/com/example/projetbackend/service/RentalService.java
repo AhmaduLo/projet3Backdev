@@ -11,6 +11,8 @@ import jakarta.transaction.Transactional;
 import lombok.Builder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -67,6 +69,39 @@ public class RentalService {
                 .build();
     }
 
+    //----get tout les renders
+    @Transactional()
+    public List<RentalDTO> getAllRentals() {
+        List<Rental> rentals = rentalRepository.findAll();
+        return rentals.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    //------update-----------
+    @Transactional
+    public RentalDTO updateRental(Integer id, RentalDTO rentalDTO) {
+        Rental rental = rentalRepository.findById(Long.valueOf(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
+
+        // Mise à jour des champs
+        rental.setName(rentalDTO.getName());
+        rental.setSurface(rentalDTO.getSurface());
+        rental.setPrice(rentalDTO.getPrice());
+        rental.setPicture(rentalDTO.getPicture()); // ou gestion binaire si modifié
+        rental.setDescription(rentalDTO.getDescription());
+
+        Rental updatedRental = rentalRepository.save(rental);
+        return convertToDTO(updatedRental);
+    }
+
+    //---------delete--------
+    @Transactional
+    public void deleteRental(Integer id) {
+        Rental rental = rentalRepository.findById(Long.valueOf(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Rental not found with id: " + id));
+        rentalRepository.delete(rental);
+    }
 
 }
 

@@ -32,9 +32,7 @@ public class RentalDTO {
     @Digits(integer = 10, fraction = 2, message = "Prix invalide (max 2 décimales)")
     private BigDecimal price;
 
-    @Size(max = 255, message = "L'URL de l'image est trop longue")
-    @Pattern(regexp = "^(https?://).*", message = "L'image doit être une URL valide")
-    private String picture;
+    private byte[] picture;
 
     @Size(max = 2000, message = "La description est trop longue")
     private String description;

@@ -30,8 +30,9 @@ public class Rental {
     @Column(nullable = false)
     private BigDecimal price;
 
-    @Column(length = 255)
-    private String picture;
+    @Lob
+    @Column(name = "picture", columnDefinition = "LONGBLOB")
+    private byte[] picture;
 
     @Column(length = 2000)
     private String description;

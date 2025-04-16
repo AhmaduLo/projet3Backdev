@@ -17,6 +17,7 @@ public class UserService {
     private UserRepository userRepository;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+
     public User createUser(User user) throws UserAlreadyExistsException {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException("Un utilisateur avec cet email existe déjà");

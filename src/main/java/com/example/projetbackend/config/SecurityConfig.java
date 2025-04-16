@@ -23,6 +23,7 @@ public class SecurityConfig {
                                 "/api/login",
                                 "/api/register",
                                 "/api/rental/**",
+                                "/api/rentals/**",
                                 "/v3/api-docs/**",        // autoriser la documentation OpenAPI
                                 "/swagger-ui/**",         // autoriser Swagger UI
                                 "/swagger-ui.html"        // autoriser la page principale Swagger
