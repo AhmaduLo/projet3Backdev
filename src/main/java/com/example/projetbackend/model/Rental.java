@@ -34,6 +34,7 @@ public class Rental {
     @Column(name = "picture", columnDefinition = "LONGBLOB")
     private byte[] picture;
 
+
     @Column(length = 2000)
     private String description;
 

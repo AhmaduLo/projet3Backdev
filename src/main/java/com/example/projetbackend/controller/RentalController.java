@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,31 +32,33 @@ public class RentalController {
     @PostMapping(value = "/rental/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RentalDTO> createRentalWithImage(
             @PathVariable Long userId,
-            @RequestParam("name") String name,
-            @RequestParam("surface") BigDecimal surface,
-            @RequestParam("price") BigDecimal price,
-            @RequestParam("description") String description,
-            @RequestParam("picture") MultipartFile picture
-    ) throws IOException {
+            @ModelAttribute @Valid RentalDTO rentalRequest,
+            BindingResult bindingResult
+
+    ) throws IOException, MethodArgumentNotValidException {
+        if (bindingResult.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, bindingResult);
+        }
+
 
         RentalDTO rentalDTO = RentalDTO.builder()
-                .name(name)
-                .surface(surface)
-                .price(price)
-                .description(description)
-                .picture(picture.getBytes())
+                .name(rentalRequest.getName())
+                .surface(rentalRequest.getSurface())
+                .price(rentalRequest.getPrice())
+                .description(rentalRequest.getDescription())
+                .picture(rentalRequest.getPicture())
                 .build();
 
         RentalDTO createdRental = rentalService.createRentalForUser(rentalDTO, userId);
         return new ResponseEntity<>(createdRental, HttpStatus.CREATED);
     }
 
-  //-----get all render
-  @GetMapping("/rentals")
-  public ResponseEntity<List<RentalDTO>> getAllRentals() {
-      List<RentalDTO> rentals = rentalService.getAllRentals();
-      return ResponseEntity.ok(rentals);
-  }
+    //-----get all render
+    @GetMapping("/rentals")
+    public ResponseEntity<List<RentalDTO>> getAllRentals() {
+        List<RentalDTO> rentals = rentalService.getAllRentals();
+        return ResponseEntity.ok(rentals);
+    }
 
     //update un rental
     @PutMapping(value = "/rental/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

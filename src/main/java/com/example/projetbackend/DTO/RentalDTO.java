@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -32,7 +33,9 @@ public class RentalDTO {
     @Digits(integer = 10, fraction = 2, message = "Prix invalide (max 2 décimales)")
     private BigDecimal price;
 
-    private byte[] picture;
+
+    private byte[]  picture;
+
 
     @Size(max = 2000, message = "La description est trop longue")
     private String description;

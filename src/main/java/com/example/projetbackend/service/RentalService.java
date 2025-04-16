@@ -29,28 +29,20 @@ public class RentalService {
 
     @Transactional
     public RentalDTO createRentalForUser(RentalDTO rentalDTO, Long userId) {
-        // 1. Vérifier que l'utilisateur existe
         User owner = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-
-
-        // 2. Convertir DTO -> Entity avec l'owner
         Rental rental = Rental.builder()
                 .name(rentalDTO.getName())
                 .surface(rentalDTO.getSurface())
                 .price(rentalDTO.getPrice())
-                .picture(rentalDTO.getPicture())
+                .picture(rentalDTO.getPicture()) // byte[] ou String selon votre modèle
                 .description(rentalDTO.getDescription())
                 .owner(owner)
                 .build();
 
-        // 3. Sauvegarder
         Rental savedRental = rentalRepository.save(rental);
-
-        // 4. Retourner le DTO
         return convertToDTO(savedRental);
-        
     }
     //5 . Conversion Entity → DTO
     private RentalDTO convertToDTO(Rental savedRental) {
@@ -68,7 +60,6 @@ public class RentalService {
                 .ownerId(Long.valueOf(savedRental.getOwner() != null ? savedRental.getOwner().getId() : null))
                 .build();
     }
-
     //----get tout les renders
     @Transactional()
     public List<RentalDTO> getAllRentals() {
