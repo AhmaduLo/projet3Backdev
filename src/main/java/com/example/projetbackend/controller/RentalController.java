@@ -1,8 +1,11 @@
 package com.example.projetbackend.controller;
 
 import com.example.projetbackend.DTO.RentalDTO;
+import com.example.projetbackend.DTO.RentalResponseDTO;
 import com.example.projetbackend.ResourceNotFoundException;
 import com.example.projetbackend.model.Rental;
+import com.example.projetbackend.repository.RentalRepository;
+import com.example.projetbackend.repository.UserRepository;
 import com.example.projetbackend.service.RentalService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -23,34 +26,40 @@ import java.util.List;
 public class RentalController {
 
     private final RentalService rentalService;
+    private final UserRepository userRepository;
+    private final RentalRepository rentalRepository;
 
-    public RentalController(RentalService rentalService) {
+    public RentalController(RentalService rentalService, UserRepository userRepository, RentalRepository rentalRepository) {
         this.rentalService = rentalService;
+        this.userRepository = userRepository;
+        this.rentalRepository = rentalRepository;
     }
 
     //post rental d'un user
     @PostMapping(value = "/rental/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<RentalDTO> createRentalWithImage(
+    public ResponseEntity<RentalResponseDTO> createRentalWithImage(
             @PathVariable Long userId,
-            @ModelAttribute @Valid RentalDTO rentalRequest,
+            @ModelAttribute @Valid RentalResponseDTO rentalRequest,
             BindingResult bindingResult
-
     ) throws IOException, MethodArgumentNotValidException {
         if (bindingResult.hasErrors()) {
             throw new MethodArgumentNotValidException(null, bindingResult);
         }
 
+        byte[] pictureBytes = rentalRequest.getPicture() != null ? rentalRequest.getPicture().getBytes() : null;
 
-        RentalDTO rentalDTO = RentalDTO.builder()
+        Rental rental = Rental.builder()
                 .name(rentalRequest.getName())
                 .surface(rentalRequest.getSurface())
                 .price(rentalRequest.getPrice())
+                .picture(pictureBytes)
                 .description(rentalRequest.getDescription())
-                .picture(rentalRequest.getPicture())
+                .owner(userRepository.findById(userId)
+                        .orElseThrow(() -> new ResourceNotFoundException("User not found")))
                 .build();
 
-        RentalDTO createdRental = rentalService.createRentalForUser(rentalDTO, userId);
-        return new ResponseEntity<>(createdRental, HttpStatus.CREATED);
+        Rental saved = rentalRepository.save(rental);
+        return ResponseEntity.status(HttpStatus.CREATED).body(rentalService.convertToResponseDTO(saved));
     }
 
     //-----get all render
@@ -70,7 +79,7 @@ public class RentalController {
             @RequestParam("description") String description,
             @RequestParam(value = "picture", required = false) MultipartFile picture
     ) throws IOException {
-        byte[] pictureBytes = picture != null ? picture.getBytes() : null;
+        MultipartFile pictureBytes = picture != null ? picture : null;
 
         RentalDTO dto = RentalDTO.builder()
                 .name(name)
