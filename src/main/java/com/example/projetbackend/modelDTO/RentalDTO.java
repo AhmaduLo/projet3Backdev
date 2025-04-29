@@ -30,11 +30,19 @@ public class RentalDTO {
     @Digits(integer = 10, fraction = 2, message = "Le prix doit avoir au maximum 2 décimales")
     private BigDecimal price;
 
-    @Size(max = 2552, message = "L'URL de l'image ne peut pas dépasser 255 caractères")
+    @Size(max = 255, message = "L'URL de l'image ne peut pas dépasser 255 caractères")
     private String picture;
 
     @Size(max = 2000, message = "La description ne peut pas dépasser 2000 caractères")
     private String description;
 
 
+    // Constructeur
+    public RentalDTO(String name, double surface, double price, String picture, String description) {
+        this.name = name;
+        this.surface = BigDecimal.valueOf(surface);
+        this.price = BigDecimal.valueOf(price);
+        this.picture = picture;
+        this.description = description;
+    }
 }
