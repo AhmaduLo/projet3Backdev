@@ -3,9 +3,11 @@ package com.example.projetbackend.controller;
 
 import com.example.projetbackend.model.Rental;
 import com.example.projetbackend.modelDTO.RentalDTO;
+import com.example.projetbackend.modelDTO.RentalFormDTO;
 import com.example.projetbackend.repository.UserRepository;
 import com.example.projetbackend.service.RentalService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,15 +33,12 @@ public class RentalController {
     @PostMapping(value = "/rental/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Rental> createRental(
             @PathVariable Integer userId,
-            @RequestParam("name") String name,
-            @RequestParam("surface") Double surface,
-            @RequestParam("price") Double price,
-            @RequestParam("description") String description,
-            @RequestParam("picture") MultipartFile file) throws IOException {
+            @Valid @ModelAttribute RentalFormDTO form) throws IOException {
 
-        String pictureUrl = rentalService.uploadImage(file);
+        String pictureUrl = rentalService.uploadImage(form.getPicture());
 
-        RentalDTO rentalDTO = new RentalDTO(name, surface, price, pictureUrl, description);
+        RentalDTO rentalDTO = new RentalDTO(
+                form.getName(), form.getSurface(), form.getPrice(), pictureUrl, form.getDescription());
 
         Rental createdRental = rentalService.createRental(userId, rentalDTO);
         return ResponseEntity
