@@ -7,7 +7,6 @@ import com.example.projetbackend.modelDTO.RentalResponseDTO;
 import com.example.projetbackend.repository.RentalRepository;
 import com.example.projetbackend.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -41,6 +40,7 @@ public class RentalService {
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
 
+        //mise a jour de Entitie Rental
         Rental rental = Rental.builder()
                 .name(rentalDTO.getName())
                 .surface(rentalDTO.getSurface())
@@ -101,7 +101,7 @@ public class RentalService {
     @Transactional
     public List<RentalResponseDTO> getAllRentals() {
         return rentalRepository.findAll().stream()
-                .map(RentalResponseDTO::new)
+                .map(RentalResponseDTO::new)//chaque rental est convertie en RentalResponseDTO
                 .toList();
     }
 

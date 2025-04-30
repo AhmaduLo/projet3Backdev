@@ -41,6 +41,7 @@ public class RentalController {
         // Télécharge l'image et obtient l'URL
         String pictureUrl = rentalService.uploadImage(form.getPicture());
 
+        //convertir RentalFormDTO en RentalDTO
         RentalDTO rentalDTO = new RentalDTO(
                 form.getName(), form.getSurface(), form.getPrice(), pictureUrl, form.getDescription());
 
