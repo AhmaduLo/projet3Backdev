@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 
 
 @RestController
@@ -91,4 +92,32 @@ public class RentalController {
         Rental updatedRental = rentalService.updateRental(id, rentalDTO, userId);
         return ResponseEntity.ok(new RentalResponseDTO(updatedRental));
     }
+
+
+    //---------Methode pour le getAll--------------
+    @GetMapping("/rentals")
+    public ResponseEntity<List<RentalResponseDTO>> getAllRentals() {
+        List<RentalResponseDTO> rentals = rentalService.getAllRentals();
+        return ResponseEntity.ok(rentals);
+    }
+
+    //---------Methode pour le delete--------------
+    @DeleteMapping("/rentalDelete/{id}")
+    public ResponseEntity<String> deleteRental(
+            @PathVariable Integer id,
+            Authentication authentication
+    ) {
+        Integer userId = Integer.parseInt(authentication.getName());
+        rentalService.deleteRental(id, userId);
+        return ResponseEntity.ok("La location a été supprimée avec succès.");
+    }
+
+    //---------Methode pour le delete tous ces location--------------
+    @DeleteMapping("/DeleteAllRental")
+    public ResponseEntity<String> deleteAllUserRentals(Authentication authentication) {
+        Integer userId = Integer.parseInt(authentication.getName());
+        rentalService.deleteAllRentalsByUserId(userId);
+        return ResponseEntity.ok("Toutes vos locations ont été supprimées avec succès.");
+    }
+
 }

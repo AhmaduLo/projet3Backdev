@@ -3,6 +3,7 @@ package com.example.projetbackend.service;
 import com.example.projetbackend.model.Rental;
 import com.example.projetbackend.model.User;
 import com.example.projetbackend.modelDTO.RentalDTO;
+import com.example.projetbackend.modelDTO.RentalResponseDTO;
 import com.example.projetbackend.repository.RentalRepository;
 import com.example.projetbackend.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -95,5 +97,33 @@ public class RentalService {
         return rentalRepository.save(rental);
     }
 
+    //---------Methode pour le getAll--------------
+    @Transactional
+    public List<RentalResponseDTO> getAllRentals() {
+        return rentalRepository.findAll().stream()
+                .map(RentalResponseDTO::new)
+                .toList();
+    }
 
+
+    //---------Methode pour le delete--------------
+
+    @Transactional
+    public void deleteRental(Integer rentalId, Integer userId) {
+        Rental rental = rentalRepository.findById(rentalId)
+                .orElseThrow(() -> new IllegalArgumentException("Rental not found with id: " + rentalId));
+
+        if (!rental.getOwner().getId().equals(userId)) {
+            throw new SecurityException("Vous n'êtes pas autorisé à supprimer cette location.");
+        }
+
+        rentalRepository.delete(rental);
+    }
+
+    //---------Methode pour le delete tous ces location--------------
+    @Transactional
+    public void deleteAllRentalsByUserId(Integer userId) {
+        List<Rental> rentals = rentalRepository.findByOwnerId(userId);
+        rentalRepository.deleteAll(rentals);
+    }
 }
