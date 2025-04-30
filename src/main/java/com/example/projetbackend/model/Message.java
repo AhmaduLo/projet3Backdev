@@ -34,7 +34,6 @@ public class Message {
     private LocalDateTime updatedAt;
 
 
-
     // Constructeurs
     public Message() {
     }
