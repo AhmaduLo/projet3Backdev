@@ -28,6 +28,11 @@ public class RentalService {
     private final UserRepository userRepository;
 
 
+    // Méthode pour récupérer un Rental par son ID
+    public Rental getRentalById(Integer id) {
+        return rentalRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Rental not found with id: " + id));
+    }
     @Transactional
     // Méthode pour créer un Rental
     public Rental createRental(Integer userId, RentalDTO rentalDTO) {
@@ -68,4 +73,27 @@ public class RentalService {
         // Retourner l'URL relative de l'image
         return "/uploads/" + filename;
     }
+
+    //--------------Methode pour update rental-------------------
+    @Transactional
+    public Rental updateRental(Integer rentalId, RentalDTO rentalDTO, Integer userId) {
+        Rental rental = rentalRepository.findById(rentalId)
+                .orElseThrow(() -> new IllegalArgumentException("Rental not found with id: " + rentalId));
+
+        // Vérifier que le user est bien le propriétaire
+        if (!rental.getOwner().getId().equals(userId)) {
+            throw new SecurityException("Vous n'êtes pas autorisé à modifier cette location.");
+        }
+
+        // Mettre à jour les champs modifiables
+        rental.setName(rentalDTO.getName());
+        rental.setSurface(rentalDTO.getSurface());
+        rental.setPrice(rentalDTO.getPrice());
+        rental.setDescription(rentalDTO.getDescription());
+        rental.setPicture(rentalDTO.getPicture());
+
+        return rentalRepository.save(rental);
+    }
+
+
 }

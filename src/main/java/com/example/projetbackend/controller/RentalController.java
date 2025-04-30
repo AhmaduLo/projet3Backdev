@@ -4,6 +4,7 @@ package com.example.projetbackend.controller;
 import com.example.projetbackend.model.Rental;
 import com.example.projetbackend.modelDTO.RentalDTO;
 import com.example.projetbackend.modelDTO.RentalFormDTO;
+import com.example.projetbackend.modelDTO.RentalResponseDTO;
 import com.example.projetbackend.repository.UserRepository;
 import com.example.projetbackend.service.RentalService;
 
@@ -11,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 
 import org.springframework.web.bind.annotation.*;
@@ -35,9 +37,6 @@ public class RentalController {
             @PathVariable Integer userId,
             @Valid @ModelAttribute RentalFormDTO form) throws IOException {
 
-        // Récupérer l'ID de l'utilisateur authentifié à partir du SecurityContext
-//        Long userId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         // Télécharge l'image et obtient l'URL
         String pictureUrl = rentalService.uploadImage(form.getPicture());
 
@@ -56,5 +55,40 @@ public class RentalController {
     public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
         String pictureUrl = rentalService.uploadImage(file);
         return ResponseEntity.ok(pictureUrl);
+    }
+
+    //---------Methode pour le update--------------
+    @PutMapping(value = "/updateRental/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<RentalResponseDTO> updateRental(
+            @PathVariable Integer id,
+            @Valid @ModelAttribute RentalFormDTO form,
+            Authentication authentication
+    ) throws IOException {
+        // Récupère l'ID de l'utilisateur authentifié
+        Integer userId = Integer.parseInt(authentication.getName());
+
+        // Vérifie si une nouvelle image est fournie, sinon conserve l'image existante
+        String pictureUrl = form.getPicture() != null && !form.getPicture().isEmpty()
+                ? rentalService.uploadImage(form.getPicture())
+                : null;
+
+        // Récupère l'objet Rental existant
+        Rental existingRental = rentalService.getRentalById(id); // Cette méthode doit exister dans RentalService
+
+        // Si une image est fournie, utilise la nouvelle image, sinon garde l'ancienne image
+        String finalPicture = (pictureUrl != null) ? pictureUrl : existingRental.getPicture();
+
+        // Construction du DTO avec les informations mises à jour
+        RentalDTO rentalDTO = new RentalDTO(
+                form.getName(),
+                form.getSurface(),
+                form.getPrice(),
+                finalPicture,  // Utilise finalPicture pour l'image
+                form.getDescription()
+        );
+
+        // Mise à jour du Rental
+        Rental updatedRental = rentalService.updateRental(id, rentalDTO, userId);
+        return ResponseEntity.ok(new RentalResponseDTO(updatedRental));
     }
 }

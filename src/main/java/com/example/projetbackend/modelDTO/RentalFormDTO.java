@@ -1,9 +1,12 @@
 package com.example.projetbackend.modelDTO;
 
 import jakarta.validation.constraints.*;
+import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
+@Setter
+@Getter
 public class RentalFormDTO {
 
     @NotBlank(message = "Le nom ne peut pas être vide")
@@ -20,50 +23,13 @@ public class RentalFormDTO {
     @Digits(integer = 10, fraction = 2, message = "Le prix doit avoir au maximum 2 décimales")
     private Double price;
 
-    @Setter
     @NotBlank(message = "La description ne peut pas être vide")
     private String description;
-
-    public MultipartFile getPicture() {
-        return picture;
-    }
-
-    public void setPicture(MultipartFile picture) {
-        this.picture = picture;
-    }
 
     @NotNull(message = "Le fichier image est requis")
     private MultipartFile picture;
 
     // Getters & Setters
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Double getSurface() {
-        return surface;
-    }
-
-    public void setSurface(Double surface) {
-        this.surface = surface;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    public String getDescription() {
-        return description;
-    }
 
 
 }
