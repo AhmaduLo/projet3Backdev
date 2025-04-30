@@ -35,14 +35,19 @@ public class RentalController {
             @PathVariable Integer userId,
             @Valid @ModelAttribute RentalFormDTO form) throws IOException {
 
+        // Récupérer l'ID de l'utilisateur authentifié à partir du SecurityContext
+//        Long userId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Télécharge l'image et obtient l'URL
         String pictureUrl = rentalService.uploadImage(form.getPicture());
 
         RentalDTO rentalDTO = new RentalDTO(
                 form.getName(), form.getSurface(), form.getPrice(), pictureUrl, form.getDescription());
 
+        // Crée la location et retourne la réponse
         Rental createdRental = rentalService.createRental(userId, rentalDTO);
         return ResponseEntity
-                .created(URI.create("/api/rental/" + createdRental.getId()))
+                .created(URI.create("/api/rental/" + createdRental.getId())) // Renvoie la location créée avec son URI
                 .body(createdRental);
     }
 

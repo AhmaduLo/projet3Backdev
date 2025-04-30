@@ -19,10 +19,11 @@ public class FileUploadController {
 
     @PostMapping("/upload-file")
     public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file) throws IOException {
-        String filename = UUID.randomUUID() + "-" + file.getOriginalFilename();
-        Path uploadPath = Paths.get("uploads");
+        String filename = UUID.randomUUID() + "-" + file.getOriginalFilename(); // Crée un nom unique pour le fichier
+        Path uploadPath = Paths.get("uploads"); // Le dossier dans lequel le fichier sera enregistré
         Files.createDirectories(uploadPath); // Crée le dossier s’il n'existe pas
 
+        // Copie du fichier dans le dossier spécifié
         Files.copy(file.getInputStream(), uploadPath.resolve(filename));
         return ResponseEntity.ok("/uploads/" + filename);
     }
