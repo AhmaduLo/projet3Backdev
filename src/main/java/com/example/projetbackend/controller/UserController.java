@@ -2,6 +2,7 @@ package com.example.projetbackend.controller;
 
 import com.example.projetbackend.UserAlreadyExistsException;
 import com.example.projetbackend.model.User;
+import com.example.projetbackend.modelDTO.UserResponseDTO;
 import com.example.projetbackend.security.JwtUtils;
 import com.example.projetbackend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +34,7 @@ public class UserController {
     public ResponseEntity<?> createUser(@RequestBody User user) {
         try {
             User createdUser = userService.createUser(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new UserResponseDTO(createdUser));
         } catch (UserAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
@@ -53,7 +54,7 @@ public class UserController {
         // 4. Construction de la réponse
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);
-        response.put("user", user); // Optionnel: renvoyer les infos utilisateur
+        response.put("user",new UserResponseDTO(user)); // Optionnel: renvoyer les infos utilisateur
 
         return ResponseEntity.ok(response);
     }
