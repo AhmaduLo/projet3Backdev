@@ -16,16 +16,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 @Component
-public class JwtAuthFilter  extends OncePerRequestFilter {
+public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtUtils jwtUtils;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         try {
             String jwt = parseJwt(request);
@@ -33,9 +30,7 @@ public class JwtAuthFilter  extends OncePerRequestFilter {
                 Long userId = jwtUtils.extractUserId(jwt);
 
                 // Créez un Authentication token et l'ajouter au contexte
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                userId, null, new ArrayList<>());
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId, null, new ArrayList<>());
 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 

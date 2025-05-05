@@ -34,7 +34,7 @@ public class Message {
     private LocalDateTime updatedAt;
 
 
-    // Constructeurs
+
     public Message() {
     }
 
@@ -44,7 +44,7 @@ public class Message {
         this.message = message;
     }
 
-    // Getters et Setters
+
     public Integer getId() {
         return id;
     }

@@ -19,21 +19,16 @@ public class JwtUtils {
 
     // Méthode pour générer un token JWT à partir d'un utilisateur
     public String generateToken(Long id, String email) {
-        return Jwts.builder()
-                .setSubject(email)// Le sujet du token (ici l'email ou le nom d'utilisateur)
+        return Jwts.builder().setSubject(email)// Le sujet du token (ici l'email ou le nom d'utilisateur)
                 .claim("userId", id) // Ajout de l'ID comme claim supplémentaire
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))// La date d'émission du token
+                .setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))// La date d'émission du token
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)// Signature avec la clé secrète
                 .compact();
     }
 
     // Ajout d'une méthode pour extraire l'ID utilisateur
     public Long extractUserId(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(SECRET_KEY)
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
         return claims.get("userId", Long.class);
     }
 

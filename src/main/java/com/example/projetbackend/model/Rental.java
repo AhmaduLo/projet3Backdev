@@ -50,7 +50,8 @@ public class Rental {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Constructeur personnalisé si nécessaire
+
+
     public Rental(String name, BigDecimal surface, BigDecimal price, User owner) {
         this.name = name;
         this.surface = surface;

@@ -31,23 +31,16 @@ public class RentalService {
 
     // Méthode pour récupérer un Rental par son ID
     public Rental getRentalById(Integer id) {
-        return rentalRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Rental not found with id: " + id));
+        return rentalRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Rental not found with id: " + id));
     }
+
     @Transactional
     // Méthode pour créer un Rental
     public Rental createRental(Integer userId, RentalDTO rentalDTO) {
-        User owner = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+        User owner = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
 
         //mise a jour de Entitie Rental
-        Rental rental = Rental.builder()
-                .name(rentalDTO.getName())
-                .surface(rentalDTO.getSurface())
-                .price(rentalDTO.getPrice())
-                .picture(rentalDTO.getPicture())
-                .description(rentalDTO.getDescription())
-                .owner(owner)  // Lier l'utilisateur au Rental
+        Rental rental = Rental.builder().name(rentalDTO.getName()).surface(rentalDTO.getSurface()).price(rentalDTO.getPrice()).picture(rentalDTO.getPicture()).description(rentalDTO.getDescription()).owner(owner)  // Lier l'utilisateur au Rental
                 .build();
 
         return rentalRepository.save(rental);
@@ -79,8 +72,7 @@ public class RentalService {
     //--------------Methode pour update rental-------------------
     @Transactional
     public Rental updateRental(Integer rentalId, RentalDTO rentalDTO, Integer userId) {
-        Rental rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new IllegalArgumentException("Rental not found with id: " + rentalId));
+        Rental rental = rentalRepository.findById(rentalId).orElseThrow(() -> new IllegalArgumentException("Rental not found with id: " + rentalId));
 
         // Vérifier que le user est bien le propriétaire
         if (!rental.getOwner().getId().equals(userId)) {
@@ -100,8 +92,7 @@ public class RentalService {
     //---------Methode pour le getAll--------------
     @Transactional
     public List<RentalResponseDTO> getAllRentals() {
-        return rentalRepository.findAll().stream()
-                .map(RentalResponseDTO::new)//chaque rental est convertie en RentalResponseDTO
+        return rentalRepository.findAll().stream().map(RentalResponseDTO::new)//chaque rental est convertie en RentalResponseDTO
                 .toList();
     }
 
@@ -110,8 +101,7 @@ public class RentalService {
 
     @Transactional
     public void deleteRental(Integer rentalId, Integer userId) {
-        Rental rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new IllegalArgumentException("Rental not found with id: " + rentalId));
+        Rental rental = rentalRepository.findById(rentalId).orElseThrow(() -> new IllegalArgumentException("Rental not found with id: " + rentalId));
 
         if (!rental.getOwner().getId().equals(userId)) {
             throw new SecurityException("Vous n'êtes pas autorisé à supprimer cette location.");

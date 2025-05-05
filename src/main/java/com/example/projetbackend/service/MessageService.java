@@ -23,11 +23,9 @@ public class MessageService {
     // ------Créer un message--------
     @Transactional
     public Message createMessage(Integer userId, Integer rentalId, String messageText) {
-        Rental rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new IllegalArgumentException("Rental not found"));
+        Rental rental = rentalRepository.findById(rentalId).orElseThrow(() -> new IllegalArgumentException("Rental not found"));
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Message message = new Message(rental, user, messageText);
         return messageRepository.save(message);

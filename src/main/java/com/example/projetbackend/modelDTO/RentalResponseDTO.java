@@ -19,7 +19,7 @@ public class RentalResponseDTO {
     private BigDecimal price;
     private String picture;
     private String description;
-    private String ownerEmail; // ou ownerId
+    private String ownerEmail;
 
     public RentalResponseDTO(Rental rental) {
         this.id = rental.getId();
@@ -28,6 +28,6 @@ public class RentalResponseDTO {
         this.price = rental.getPrice();
         this.picture = rental.getPicture();
         this.description = rental.getDescription();
-        this.ownerEmail = rental.getOwner().getEmail(); // ou getId()
+        this.ownerEmail = rental.getOwner().getEmail();
     }
 }

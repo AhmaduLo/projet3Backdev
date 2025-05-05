@@ -29,7 +29,7 @@ public class RentalFormDTO {
     @NotNull(message = "Le fichier image est requis")
     private MultipartFile picture;
 
-    // Getters & Setters
+
 
 
 }

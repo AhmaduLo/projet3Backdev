@@ -9,7 +9,7 @@ import lombok.Setter;
 public class MessageResponseDTO {
     private Integer id;
     private String content;
-    private Integer username; // ou userId
+    private Integer username;
     private Integer rentalId;
     private String createdAt;
 
@@ -21,5 +21,5 @@ public class MessageResponseDTO {
         this.createdAt = message.getCreatedAt().toString();
     }
 
-    // getters...
+
 }

@@ -27,10 +27,8 @@ public class UserService {
 
     //-------authentification user--------
     public Optional<User> authenticateUser(String email, String password) {
-        return userRepository.findByEmail(email)
-                .filter(user -> passwordEncoder.matches(password, user.getPassword()));
+        return userRepository.findByEmail(email).filter(user -> passwordEncoder.matches(password, user.getPassword()));
     }
-
 
 
 }

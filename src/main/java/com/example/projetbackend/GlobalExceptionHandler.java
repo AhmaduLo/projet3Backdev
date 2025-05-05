@@ -24,24 +24,14 @@ public class GlobalExceptionHandler {
             errors.put(fieldName, errorMessage);
         });
 
-        ErrorResponse response = new ErrorResponse(
-                "VALIDATION_FAILED",
-                "Erreur de validation des données",
-                errors,
-                HttpStatus.BAD_REQUEST.value()
-        );
+        ErrorResponse response = new ErrorResponse("VALIDATION_FAILED", "Erreur de validation des données", errors, HttpStatus.BAD_REQUEST.value());
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex) {
-        ErrorResponse response = new ErrorResponse(
-                "INVALID_INPUT",
-                ex.getMessage(),
-                null,
-                HttpStatus.BAD_REQUEST.value()
-        );
+        ErrorResponse response = new ErrorResponse("INVALID_INPUT", ex.getMessage(), null, HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
