@@ -1,7 +1,9 @@
 package com.example.projetbackend.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -26,16 +28,21 @@ public class User {
 
     @Setter
     @Getter
+    @NotBlank(message = "L'email est requis")
+    @Email(message = "Format d'email invalide")
     @Column(nullable = false, unique = true, length = 255)
     private String email;
 
     @Setter
     @Getter
+    @NotBlank(message = "Le nom est requis")
     @Column(nullable = false, length = 255)
     private String name;
 
     @Setter
     @Getter
+    @NotBlank(message = "Le mot de passe est requis")
+    @Size(min = 6, message = "Le mot de passe doit contenir au moins 6 caractères")
     @Column(nullable = false, length = 255)
     private String password;
 
