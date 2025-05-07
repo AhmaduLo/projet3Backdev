@@ -32,7 +32,6 @@ import java.util.List;
 
 @Tag(name = "Rental Management", description = "Endpoints pour la gestion des locations immobilières")
 @SecurityRequirement(name = "bearerAuth")
-@PreAuthorize("isAuthenticated()")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -40,7 +39,6 @@ import java.util.List;
 public class RentalController {
 
     private final RentalService rentalService;
-    private final UserRepository userRepository;
 
     // Méthode pour créer un Rental avec une image
     @Operation(summary = "Créer une nouvelle location", description = "Crée une nouvelle location avec une image")

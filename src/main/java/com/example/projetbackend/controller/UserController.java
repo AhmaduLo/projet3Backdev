@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Optional;
 
 @Tag(name = "User Authentication", description = "Endpoints pour l'inscription et la connexion")
-@PreAuthorize("isAuthenticated()")
 @RestController
 @RequestMapping("/api")
 public class UserController {
@@ -80,15 +79,5 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Validation JWT", description = "Vérifie la validité d'un token JWT")
-    @SecurityRequirement(name = "bearerAuth")
-    @SecurityRequirement(name = "bearerAuth")
-    @GetMapping("/validate")
-    public ResponseEntity<String> validateToken(@RequestParam String token) {
-        if (jwtUtils.validateToken(token)) {
-            return ResponseEntity.ok("Token est valide ✅");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token invalide ❌");
-        }
-    }
+
 }

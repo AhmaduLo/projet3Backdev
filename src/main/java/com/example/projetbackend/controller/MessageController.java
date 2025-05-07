@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Tag(name = "Message Management", description = "Endpoints pour la gestion des messages entre utilisateurs")
-@PreAuthorize("isAuthenticated()")
 @SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequiredArgsConstructor
