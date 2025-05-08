@@ -30,5 +30,9 @@ public class UserService {
         return userRepository.findByEmail(email).filter(user -> passwordEncoder.matches(password, user.getPassword()));
     }
 
+    //----------------methode me -----------------------------
+    public Optional<User> getUserById(Integer userId) {
+        return userRepository.findById(userId);
+    }
 
 }

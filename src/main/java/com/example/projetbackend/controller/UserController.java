@@ -11,13 +11,12 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +26,7 @@ import java.util.Optional;
 
 @Tag(name = "User Authentication", description = "Endpoints pour l'inscription et la connexion")
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 public class UserController {
 
     @Autowired
@@ -53,7 +52,15 @@ public class UserController {
     public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
         try {
             User createdUser = userService.createUser(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new UserResponseDTO(createdUser));
+
+            // Générer le token après création
+            String token = jwtUtils.generateToken(createdUser.getId().longValue(), createdUser.getEmail());
+
+            // Retourner le token comme dans /login
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (UserAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
@@ -74,10 +81,36 @@ public class UserController {
         // 4. Construction de la réponse
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);
-        response.put("user", new UserResponseDTO(user)); // Optionnel: renvoyer les infos utilisateur
 
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<?> me(Authentication authentication) {
+        try {
+            Integer userId = Integer.parseInt(authentication.getName()); // Injecté par le filtre JWT
+            Optional<User> user = userService.getUserById(userId);
+
+            if (user.isPresent()) {
+                UserResponseDTO userResponseDTO = new UserResponseDTO(user.get());
+                return ResponseEntity.ok(userResponseDTO);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Utilisateur non trouvé");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token invalide ou expiré");
+        }
+    }
+
+    @GetMapping("/user/{UserId}")
+    public ResponseEntity<Optional<User>> getUserById(@PathVariable Integer UserId) {
+        Optional<User> user = userService.getUserById(UserId);  // Service qui récupère l'utilisateur par ID
+        if (user.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(user);
+    }
+
 
 }
+

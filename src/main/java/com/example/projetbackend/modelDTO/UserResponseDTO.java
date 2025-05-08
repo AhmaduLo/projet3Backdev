@@ -13,11 +13,13 @@ public class UserResponseDTO {
     private String email;
     private String name;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public UserResponseDTO(User user) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.name = user.getName();
         this.createdAt = user.getCreatedAt();
+        this.updatedAt = user.getUpdatedAt();
     }
 }

@@ -28,7 +28,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "Rental Management", description = "Endpoints pour la gestion des locations immobilières")
 @SecurityRequirement(name = "bearerAuth")
@@ -43,9 +45,10 @@ public class RentalController {
     // Méthode pour créer un Rental avec une image
     @Operation(summary = "Créer une nouvelle location", description = "Crée une nouvelle location avec une image")
     @ApiResponses(value = {@ApiResponse(responseCode = "201", description = "Location créée avec succès", content = @Content(schema = @Schema(implementation = Rental.class))), @ApiResponse(responseCode = "400", description = "Données invalides"), @ApiResponse(responseCode = "401", description = "Non autorisé"), @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")})
-    @PostMapping(value = "/rental/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Rental> createRental(@PathVariable Integer userId, @Valid @ModelAttribute RentalFormDTO form) throws IOException {
+    @PostMapping(value = "/rentals", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<RentalResponseDTO> createRental( @Valid @ModelAttribute RentalFormDTO form, Authentication authentication) throws IOException {
 
+        Integer userId = Integer.parseInt(authentication.getName());
         // Télécharge l'image et obtient l'URL
         String pictureUrl = rentalService.uploadImage(form.getPicture());
 
@@ -54,8 +57,9 @@ public class RentalController {
 
         // Crée la location et retourne la réponse
         Rental createdRental = rentalService.createRental(userId, rentalDTO);
+        RentalResponseDTO responseDTO = new RentalResponseDTO(createdRental);
         return ResponseEntity.created(URI.create("/api/rental/" + createdRental.getId())) // Renvoie la location créée avec son URI
-                .body(createdRental);
+                .body(responseDTO);
     }
 
 
@@ -71,7 +75,7 @@ public class RentalController {
     //---------Methode pour le update--------------
     @Operation(summary = "Mettre à jour une location", description = "Met à jour les informations d'une location existante")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Location mise à jour avec succès", content = @Content(schema = @Schema(implementation = RentalResponseDTO.class))), @ApiResponse(responseCode = "400", description = "Données invalides"), @ApiResponse(responseCode = "401", description = "Non autorisé"), @ApiResponse(responseCode = "404", description = "Location non trouvée")})
-    @PutMapping(value = "/updateRental/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/rentals/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RentalResponseDTO> updateRental(@PathVariable Integer id, @Valid @ModelAttribute RentalFormDTO form, Authentication authentication) throws IOException {
         // Récupère l'ID de l'utilisateur authentifié
         Integer userId = Integer.parseInt(authentication.getName());
@@ -94,20 +98,34 @@ public class RentalController {
         return ResponseEntity.ok(new RentalResponseDTO(updatedRental));
     }
 
+    //---------Methode pour getById--------------
+    @Operation(summary = "Récupérer une location par ID", description = "Retourne les détails d'une location spécifique")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Location trouvée", content = @Content(schema = @Schema(implementation = RentalResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Location non trouvée"),
+            @ApiResponse(responseCode = "401", description = "Non autorisé")
+    })
+    @GetMapping("/rentals/{id}")
+    public ResponseEntity<RentalResponseDTO> getRentalById(@PathVariable Integer id) {
+        Rental rental = rentalService.getRentalById(id);
+        return ResponseEntity.ok(new RentalResponseDTO(rental));
+    }
 
     //---------Methode pour le getAll--------------
     @Operation(summary = "Récupérer toutes les locations", description = "Retourne la liste de toutes les locations disponibles")
     @ApiResponse(responseCode = "200", description = "Liste des locations récupérée avec succès", content = @Content(schema = @Schema(implementation = RentalResponseDTO.class)))
     @GetMapping("/rentals")
-    public ResponseEntity<List<RentalResponseDTO>> getAllRentals() {
+    public ResponseEntity<Map<String, Object>> getAllRentals() {
         List<RentalResponseDTO> rentals = rentalService.getAllRentals();
-        return ResponseEntity.ok(rentals);
+        Map<String, Object> response = new HashMap<>();
+        response.put("rentals", rentals);
+        return ResponseEntity.ok(response);
     }
 
     //---------Methode pour le delete--------------
     @Operation(summary = "Supprimer une location", description = "Supprime une location spécifique")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Location supprimée avec succès"), @ApiResponse(responseCode = "401", description = "Non autorisé"), @ApiResponse(responseCode = "404", description = "Location non trouvée")})
-    @DeleteMapping("/rentalDelete/{id}")
+    @DeleteMapping("/rentals/{id}")
     public ResponseEntity<String> deleteRental(@PathVariable Integer id, Authentication authentication) {
         Integer userId = Integer.parseInt(authentication.getName());
         rentalService.deleteRental(id, userId);
@@ -117,7 +135,7 @@ public class RentalController {
     //---------Methode pour le delete tous ces location--------------
     @Operation(summary = "Supprimer toutes les locations d'un utilisateur", description = "Supprime toutes les locations appartenant à l'utilisateur connecté")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Toutes les locations ont été supprimées"), @ApiResponse(responseCode = "401", description = "Non autorisé")})
-    @DeleteMapping("/DeleteAllRental")
+    @DeleteMapping("/rentals")
     public ResponseEntity<String> deleteAllUserRentals(Authentication authentication) {
         Integer userId = Integer.parseInt(authentication.getName());
         rentalService.deleteAllRentalsByUserId(userId);

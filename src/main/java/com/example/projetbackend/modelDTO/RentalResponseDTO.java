@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -19,7 +20,9 @@ public class RentalResponseDTO {
     private BigDecimal price;
     private String picture;
     private String description;
-    private String ownerEmail;
+    Integer owner_id;
+    LocalDateTime created_at;
+    LocalDateTime updated_at;
 
     public RentalResponseDTO(Rental rental) {
         this.id = rental.getId();
@@ -28,6 +31,8 @@ public class RentalResponseDTO {
         this.price = rental.getPrice();
         this.picture = rental.getPicture();
         this.description = rental.getDescription();
-        this.ownerEmail = rental.getOwner().getEmail();
+        this.owner_id = rental.getOwner().getId();
+        this.created_at = rental.getCreatedAt();
+        this.updated_at = rental.getUpdatedAt();
     }
 }
