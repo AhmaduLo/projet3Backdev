@@ -35,12 +35,11 @@ public class MessageController {
     @Operation(summary = "Créer un nouveau message", description = "Crée un nouveau message associé à une location")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Message créé avec succès", content = @Content(schema = @Schema(implementation = MessageResponseDTO.class))), @ApiResponse(responseCode = "400", description = "Données invalides"), @ApiResponse(responseCode = "401", description = "Non autorisé"), @ApiResponse(responseCode = "404", description = "Location non trouvée")})
     @PostMapping("/messages")
-    public ResponseEntity<Map<String, String>>createMessage(@RequestBody MessageRequestDTO messageRequestDTO, Authentication authentication) {
+    public ResponseEntity<Map<String, String>> createMessage(@RequestBody MessageRequestDTO messageRequestDTO, Authentication authentication) {
 
-        Integer userId = Integer.parseInt(authentication.getName()); // Récupérer l'ID de l'utilisateur authentifié
-        Integer rentalId = messageRequestDTO.getRental_id();        // Utiliser rental_id du DTO
+        Integer userId = Integer.parseInt(authentication.getName());
+        Integer rentalId = messageRequestDTO.getRental_id();
         String content = messageRequestDTO.getMessage();
-
 
 
         if (rentalId == null || content == null) {

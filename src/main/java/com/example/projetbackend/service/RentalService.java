@@ -4,6 +4,7 @@ import com.example.projetbackend.model.Rental;
 import com.example.projetbackend.model.User;
 import com.example.projetbackend.modelDTO.RentalDTO;
 import com.example.projetbackend.modelDTO.RentalResponseDTO;
+import com.example.projetbackend.repository.MessageRepository;
 import com.example.projetbackend.repository.RentalRepository;
 import com.example.projetbackend.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -27,6 +28,7 @@ public class RentalService {
 
     private final RentalRepository rentalRepository;
     private final UserRepository userRepository;
+    private final MessageRepository messageRepository;
 
 
     // Méthode pour récupérer un Rental par son ID
@@ -106,6 +108,9 @@ public class RentalService {
         if (!rental.getOwner().getId().equals(userId)) {
             throw new SecurityException("Vous n'êtes pas autorisé à supprimer cette location.");
         }
+
+        // 3. Supprimer d'abord tous les messages associés à cette location
+        messageRepository.deleteByRentalId(rentalId); // Vous aurez besoin de cette méthode dans MessageRepository
 
         rentalRepository.delete(rental);
     }

@@ -58,6 +58,7 @@ public class RentalController {
         // Crée la location et retourne la réponse
         Rental createdRental = rentalService.createRental(userId, rentalDTO);
         RentalResponseDTO responseDTO = new RentalResponseDTO(createdRental);
+        responseDTO.setMessage("Rental created !");
         return ResponseEntity.created(URI.create("/api/rental/" + createdRental.getId())) // Renvoie la location créée avec son URI
                 .body(responseDTO);
     }
@@ -66,7 +67,7 @@ public class RentalController {
     // Méthode pour uploader l'image (exemple)
     @Operation(summary = "Télécharger une image", description = "Télécharge une image et retourne son URL")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Image téléchargée avec succès", content = @Content(schema = @Schema(implementation = String.class))), @ApiResponse(responseCode = "400", description = "Fichier invalide"), @ApiResponse(responseCode = "401", description = "Non autorisé")})
-    @PostMapping("/upload")
+    @PostMapping("/uploads")
     public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
         String pictureUrl = rentalService.uploadImage(file);
         return ResponseEntity.ok(pictureUrl);
@@ -95,7 +96,9 @@ public class RentalController {
 
         // Mise à jour du Rental
         Rental updatedRental = rentalService.updateRental(id, rentalDTO, userId);
-        return ResponseEntity.ok(new RentalResponseDTO(updatedRental));
+        RentalResponseDTO response = new RentalResponseDTO(updatedRental);
+        response.setMessage("Rental updated !");
+        return ResponseEntity.ok(response);
     }
 
     //---------Methode pour getById--------------

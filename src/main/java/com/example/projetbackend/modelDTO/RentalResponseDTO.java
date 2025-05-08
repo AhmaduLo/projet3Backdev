@@ -23,6 +23,7 @@ public class RentalResponseDTO {
     Integer owner_id;
     LocalDateTime created_at;
     LocalDateTime updated_at;
+    private String message;
 
     public RentalResponseDTO(Rental rental) {
         this.id = rental.getId();

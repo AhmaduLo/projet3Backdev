@@ -26,7 +26,6 @@ public class RentalFormDTO {
     @NotBlank(message = "La description ne peut pas être vide")
     private String description;
 
-    @NotNull(message = "Le fichier image est requis")
     private MultipartFile picture;
 
 
