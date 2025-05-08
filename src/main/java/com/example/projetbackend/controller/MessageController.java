@@ -2,6 +2,7 @@ package com.example.projetbackend.controller;
 
 
 import com.example.projetbackend.model.Message;
+import com.example.projetbackend.modelDTO.MessageRequestDTO;
 import com.example.projetbackend.modelDTO.MessageResponseDTO;
 import com.example.projetbackend.service.MessageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,13 +18,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "Message Management", description = "Endpoints pour la gestion des messages entre utilisateurs")
 @SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/messages")
+@RequestMapping("/api")
 public class MessageController {
 
     private final MessageService messageService;
@@ -31,12 +34,25 @@ public class MessageController {
     // ------Créer un message--------
     @Operation(summary = "Créer un nouveau message", description = "Crée un nouveau message associé à une location")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Message créé avec succès", content = @Content(schema = @Schema(implementation = MessageResponseDTO.class))), @ApiResponse(responseCode = "400", description = "Données invalides"), @ApiResponse(responseCode = "401", description = "Non autorisé"), @ApiResponse(responseCode = "404", description = "Location non trouvée")})
-    @PostMapping("/{rentalId}")
-    public ResponseEntity<MessageResponseDTO> createMessage(@PathVariable Integer rentalId, @RequestParam("message") String content, Authentication authentication) {
+    @PostMapping("/messages")
+    public ResponseEntity<Map<String, String>>createMessage(@RequestBody MessageRequestDTO messageRequestDTO, Authentication authentication) {
 
-        Integer userId = Integer.parseInt(authentication.getName());
-        Message message = messageService.createMessage(userId, rentalId, content);
-        return ResponseEntity.ok(new MessageResponseDTO(message));
+        Integer userId = Integer.parseInt(authentication.getName()); // Récupérer l'ID de l'utilisateur authentifié
+        Integer rentalId = messageRequestDTO.getRental_id();        // Utiliser rental_id du DTO
+        String content = messageRequestDTO.getMessage();
+
+
+
+        if (rentalId == null || content == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "RentalId and message must not be null"));
+        }
+
+        messageService.createMessage(userId, rentalId, content);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Message send with success");
+
+        return ResponseEntity.ok(response);
     }
 
     // ------recupere message par Rental--------
